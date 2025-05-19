@@ -14,7 +14,6 @@ import javax.crypto.SecretKey;
 @Component
 public class JwtUtils {
     private final int jwtExpirationMs = 86400000; // 1天
-    // private static final String jwtSecret = "mySuperSecretKeyThatIsAtLeast32CharsLong";
     private final SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
     public String generateToken(UserDetails userDetails) {

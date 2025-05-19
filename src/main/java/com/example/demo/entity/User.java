@@ -15,8 +15,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.swing.*;
-
 @Entity
 @Data
 @Builder
@@ -34,22 +32,22 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
 
-    @Enumerated(EnumType.STRING)
-    private Role role; // 新增角色欄位
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_role",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_name"))
+    private Set<Role> roles;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Set<GrantedAuthority> authorities = new HashSet<>();
-
-        // 加入每個 permission
-        role.getPermissions()
-                .forEach(
-                        permission ->
-                                authorities.add(new SimpleGrantedAuthority(permission.name())));
-
-        // 加入角色（這樣 hasRole("XXX") 還是能用）
-        authorities.add(new SimpleGrantedAuthority("ROLE_" + role.name()));
-
+        for (Role role : roles) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getName()));
+            for (Permission permission : role.getPermissions()) {
+                authorities.add(new SimpleGrantedAuthority(permission.getName()));
+            }
+        }
         return authorities;
     }
 }

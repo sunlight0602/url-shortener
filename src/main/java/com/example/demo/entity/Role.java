@@ -1,19 +1,25 @@
 package com.example.demo.entity;
 
+import jakarta.persistence.*;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.Set;
 
-public enum Role {
-    ADMIN(Set.of(Permission.READ_REPORTS, Permission.WRITE_REPORTS, Permission.MANAGE_USERS)),
-    OPERATOR(Set.of(Permission.READ_REPORTS, Permission.WRITE_REPORTS)),
-    AUDITOR(Set.of(Permission.READ_REPORTS));
+@Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Role {
 
-    private final Set<Permission> permissions;
+    @Id private String name; // 例如 "ADMIN", "OPERATOR", "AUDITOR"
 
-    Role(Set<Permission> permissions) {
-        this.permissions = permissions;
-    }
-
-    public Set<Permission> getPermissions() {
-        return permissions;
-    }
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "role_permission",
+            joinColumns = @JoinColumn(name = "role_name"),
+            inverseJoinColumns = @JoinColumn(name = "permission_name"))
+    private Set<Permission> permissions;
 }

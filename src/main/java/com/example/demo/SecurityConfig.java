@@ -1,6 +1,5 @@
 package com.example.demo;
 
-import com.example.demo.repository.UserRepository;
 import com.example.demo.service.MyUserDetailsService;
 
 import lombok.AllArgsConstructor;
@@ -9,7 +8,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -29,17 +27,20 @@ import java.util.List;
 @AllArgsConstructor
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
-    private UserRepository userRepository;
     private MyUserDetailsService myUserDetailsService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthFilter jwtAuthFilter)
             throws Exception {
         return http.csrf(AbstractHttpConfigurer::disable)
-                .cors(Customizer.withDefaults())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(
                         auth ->
-                                auth.requestMatchers("/login", "/register", "/health-check/")
+                                auth.requestMatchers(
+                                                "/login",
+                                                "/register",
+                                                "/health-check/",
+                                                "/debug-auth")
                                         .permitAll()
                                         .anyRequest()
                                         .authenticated())

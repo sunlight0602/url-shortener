@@ -4,6 +4,8 @@ import com.example.demo.dto.MessageResponseDto;
 import com.example.demo.service.UrlShortenerService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,6 +27,12 @@ public class UrlShortenerController {
     @PostMapping("shorten/")
     public String shortenUrl(@RequestParam String longUrl) {
         return this.urlShortenerService.shortenUrl(longUrl);
+    }
+
+    @GetMapping("/debug-auth")
+    public ResponseEntity<?> debugAuth() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return ResponseEntity.ok(auth.getAuthorities());
     }
 
     @PreAuthorize("hasRole('ADMIN')")
