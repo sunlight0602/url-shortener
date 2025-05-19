@@ -11,11 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -45,19 +47,21 @@ public class AuthenticationService {
                         .build();
         userRepository.save(user);
 
-        // Login
-        UserDetails userDetails = myUserDetailsService.loadUserByUsername(username);
-        Authentication auth =
-                new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities());
-        return this.authenticateAndGenerateToken(auth);
+        // Login after registration
+        return login(username, rawPassword);
     }
 
     public JwtResponseDto login(String username, String password) {
-        UsernamePasswordAuthenticationToken unauthorizedToken =
+        UsernamePasswordAuthenticationToken authToken =
                 new UsernamePasswordAuthenticationToken(username, password);
-        Authentication auth = authenticationManager.authenticate(unauthorizedToken);
-        return this.authenticateAndGenerateToken(auth);
+        Authentication auth = authenticationManager.authenticate(authToken);
+
+        // get authorities
+        UserDetails user = (UserDetails) auth.getPrincipal();
+        List<String> roles =
+                user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
+
+        return authenticateAndGenerateToken(auth);
     }
 
     public JwtResponseDto authenticateAndGenerateToken(Authentication authentication) {

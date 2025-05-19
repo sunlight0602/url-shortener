@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.MessageResponseDto;
 import com.example.demo.service.UrlShortenerService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 public class UrlShortenerController {
     private final UrlShortenerService urlShortenerService;
@@ -32,6 +34,8 @@ public class UrlShortenerController {
     @GetMapping("/debug-auth")
     public ResponseEntity<?> debugAuth() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        log.info("Auth class: {}", auth.getPrincipal().getClass().getName());
+        log.info("qwerqwer");
         return ResponseEntity.ok(auth.getAuthorities());
     }
 
