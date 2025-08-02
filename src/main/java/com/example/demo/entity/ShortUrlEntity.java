@@ -1,16 +1,20 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor; // Import AllArgsConstructor
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor; // Import NoArgsConstructor
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
 @Data
 @Builder
+@NoArgsConstructor // Added: Generates a no-argument constructor, required by JPA
+@AllArgsConstructor // Added: Generates a constructor with all fields, useful when @Builder is present
 @Entity
-public class ShortUrl {
+public class ShortUrlEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -20,11 +24,6 @@ public class ShortUrl {
 
     @Column(nullable = false)
     private String longUrl;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    // @Column(nullable = false)
-    private User user;
 
     @CreationTimestamp
     @Column(updatable = false, nullable = false)

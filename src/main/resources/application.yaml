@@ -1,0 +1,56 @@
+# Spring Boot application.yaml for MariaDB connection
+
+spring:
+  datasource:
+    # JDBC URL for MariaDB.
+    # 'mariadb' is the service name defined in your docker-compose.yml.
+    # This allows your Spring Boot app to resolve the MariaDB container by its service name
+    # when both are running in the same Docker Compose network.
+    url: jdbc:mariadb://localhost:3306/mydb
+
+    # Username for the database connection.
+    # This should match the MARIADB_USER environment variable in your docker-compose.yml.
+    username: root
+
+    # Password for the database connection.
+    # This should match the MARIADB_PASSWORD environment variable in your docker-compose.yml.
+    password: root
+
+    # MariaDB JDBC driver class.
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+    # HikariCP connection pool properties (Spring Boot's default).
+    # You can adjust these based on your application's needs.
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000 # 30 seconds
+      idle-timeout: 600000      # 10 minutes
+      max-lifetime: 1800000     # 30 minutes
+
+  # JPA/Hibernate configuration (if you are using Spring Data JPA)
+  jpa:
+    hibernate:
+      # 'ddl-auto' controls schema generation.
+      # - 'none': No DDL operations.
+      # - 'update': Updates the schema based on entities. Use with caution in production.
+      # - 'create': Creates the schema on startup, drops existing tables. (Good for development/testing)
+      # - 'create-drop': Creates on startup, drops on shutdown. (Good for testing)
+      # - 'validate': Validates the schema against entities.
+      ddl-auto: update # Or 'none' for production
+
+    # Shows SQL queries in the console (useful for debugging/development).
+    show-sql: true
+
+    # Formats the SQL queries for better readability.
+    properties:
+      hibernate:
+        format_sql: true
+        # --- ADDED THIS LINE ---
+        # Explicitly set the Hibernate dialect for MariaDB.
+        # This helps Hibernate understand the specific SQL syntax and features of MariaDB.
+        dialect: org.hibernate.dialect.MariaDBDialect
+
+# Server port for your Spring Boot application (optional, default is 8080)
+server:
+  port: 8080
